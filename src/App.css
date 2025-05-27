@@ -1,38 +1,195 @@
-.App {
-  text-align: center;
-}
-
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
-}
-
-.App-header {
-  background-color: #282c34;
+/* Reset + base layout */
+body, html, #root, .App {
+  margin: 0;
+  padding: 0;
+  font-family: 'Segoe UI', sans-serif;
+  background-color: #0d0d0d;
+  color: #ffffff;
   min-height: 100vh;
+  overflow-x: hidden;
+}
+
+.App {
+  padding: 20px;
+}
+
+/* App header */
+h1 {
+  text-align: center;
+  margin-bottom: 30px;
+  font-size: 2rem;
+}
+
+/* Search input */
+input[type="text"] {
+  font-size: 16px;
+}
+
+/* Search bar clear button */
+input + button {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+}
+
+/* Tabs container */
+.tabs {
   display: flex;
-  flex-direction: column;
-  align-items: center;
   justify-content: center;
-  font-size: calc(10px + 2vmin);
+  margin-bottom: 30px;
+  gap: 1rem;
+}
+
+/* Tab buttons */
+.tab-button {
+  background-color: transparent;
+  border: 1px solid #333;
+  color: #eee;
+  padding: 10px 20px;
+  font-size: 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: color 0.3s ease, background-color 0.3s ease, border-color 0.3s ease;
+}
+
+/* On hover: text turns blue */
+.tab-button:hover {
+  color: #3b82f6;
+  border-color: #3b82f6;
+}
+
+/* When selected: background turns blue */
+.tab-button.active {
+  background-color: #3b82f6;
   color: white;
+  border-color: #3b82f6;
 }
 
-.App-link {
-  color: #61dafb;
+/* Genre section title */
+.genre-section {
+  margin-bottom: 40px;
+  padding-left: 10px;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
+.genre-section h2 {
+  font-size: 1.4rem;
+  margin-bottom: 12px;
+  color: #f9fafb;
+  border-left: 4px solid #3b82f6;
+  padding-left: 8px;
+}
+
+/* Scrollable row wrapper */
+.scroll-wrapper {
+  position: relative;
+}
+
+/* Horizontal scroll layout */
+.horizontal-scroll {
+  display: flex;
+  overflow-x: auto;
+  gap: 1rem;
+  padding: 0 10px 10px 10px;
+  scroll-behavior: smooth;
+  scrollbar-width: none; /* Firefox */
+}
+
+.horizontal-scroll::-webkit-scrollbar {
+  display: none; /* Chrome/Safari */
+}
+
+/* Scroll arrows */
+.scroll-arrow {
+  position: absolute;
+  top: 35%;
+  transform: translateY(-50%);
+  z-index: 10;
+  font-size: 24px;
+  color: white;
+  background: rgba(0, 0, 0, 0.4);
+  border: none;
+  cursor: pointer;
+  padding: 10px;
+  border-radius: 50%;
+  display: none;
+}
+
+.scroll-wrapper:hover .scroll-arrow {
+  display: block;
+}
+
+.scroll-arrow.left {
+  left: 5px;
+}
+
+.scroll-arrow.right {
+  right: 5px;
+}
+
+/* Card component */
+.card {
+  min-width: 160px;
+  height: 260px;
+  flex-shrink: 0;
+  text-align: center;
+  position: relative;
+  border-radius: 10px;
+  overflow: hidden;
+  background-color: #111;
+  cursor: pointer;
+  transition: transform 0.3s ease;
+  scroll-snap-align: start;
+}
+
+.card:hover {
+  transform: scale(1.05);
+  z-index: 10;
+}
+
+.card img,
+.card iframe {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border: none;
+  display: block;
+}
+
+.card p {
+  margin-top: 8px;
+  font-size: 0.95rem;
+  color: #e5e7eb;
+}
+
+/* Watch page */
+.watch-page {
+  padding: 20px;
+}
+
+.watch-page a {
+  color: #3b82f6;
+  text-decoration: none;
+  margin-bottom: 20px;
+  display: inline-block;
+}
+
+.watch-page a:hover {
+  text-decoration: underline;
+}
+
+/* Responsive tweaks */
+@media (max-width: 768px) {
+  .tabs {
+    flex-direction: column;
+    align-items: center;
   }
-  to {
-    transform: rotate(360deg);
+
+  .card {
+    min-width: 140px;
+    height: 220px;
+  }
+
+  h1 {
+    font-size: 1.5rem;
   }
 }
