@@ -1,0 +1,15 @@
+{
+  "search_placeholder": "Search movies, shows, or anime...",
+  "watchlist": "Your Watchlist",
+  "continue_watching": "Continue Watching",
+  "trending": "Trending",
+  "similar_titles": "Similar Titles",
+  "genre_browser": "Browse by Genre",
+  "watch_history": "Watch History",
+  "calendar": "Airing Today",
+  "resume_prompt": "Resume from {{time}}?",
+  "resume": "Resume",
+  "remove": "Remove",
+  "back": "← Back to Browse",
+  "surprise_me": "Surprise Me"
+}

@@ -1,0 +1,15 @@
+{
+  "search_placeholder": "Buscar películas, series o anime...",
+  "watchlist": "Tu lista",
+  "continue_watching": "Seguir viendo",
+  "trending": "Tendencias",
+  "similar_titles": "Títulos similares",
+  "genre_browser": "Explorar por género",
+  "watch_history": "Historial de reproducción",
+  "calendar": "Estrenos de hoy",
+  "resume_prompt": "¿Continuar desde {{time}}?",
+  "resume": "Continuar",
+  "remove": "Eliminar",
+  "back": "← Volver",
+  "surprise_me": "Sorpréndeme"
+}
