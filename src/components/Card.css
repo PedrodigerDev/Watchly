@@ -1,0 +1,60 @@
+.media-card {
+  width: 220px;
+  min-width: 220px;
+  height: 330px;
+  border-radius: 10px;
+  overflow: hidden;
+  background-color: #111827;
+  cursor: pointer;
+  position: relative;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.media-card:hover {
+  transform: scale(1.07);
+  z-index: 10;
+  box-shadow: 0 0 20px rgba(139, 92, 246, 0.5);
+}
+
+.card-thumbnail {
+  width: 100%;
+  height: 80%;
+  background-color: #1f2937;
+}
+
+.card-thumbnail img,
+.card-thumbnail iframe {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.card-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px;
+  font-size: 0.9rem;
+  color: #f9fafb;
+  background-color: rgba(0, 0, 0, 0.7);
+}
+
+.card-title {
+  flex: 1;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: #d1d5db;
+}
+
+.watchlist-btn {
+  background: none;
+  border: none;
+  color: #fbbf24;
+  font-size: 1.2rem;
+  cursor: pointer;
+}

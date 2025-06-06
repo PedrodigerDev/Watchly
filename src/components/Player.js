@@ -1,13 +1,16 @@
-// src/components/Player.js
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
+import { FaShareAlt } from 'react-icons/fa';
+import './Player.css';
 
 const Player = ({ src }) => {
+  const [copied, setCopied] = useState(false);
+
   useEffect(() => {
     const handleMessage = (event) => {
       if (typeof event.data === 'string') {
         try {
           const message = JSON.parse(event.data);
-          if (message && message.id && message.type) {
+          if (message?.id && message?.type) {
             const key = `progress_${message.type}_${message.id}`;
             localStorage.setItem(key, JSON.stringify(message));
             console.log("Progress saved to localStorage:", message);
@@ -22,18 +25,33 @@ const Player = ({ src }) => {
     return () => window.removeEventListener("message", handleMessage);
   }, []);
 
+  const handleShare = () => {
+    navigator.clipboard.writeText(window.location.href).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    });
+  };
+
   if (!src) return null;
 
   return (
-    <div style={{ position: 'relative', paddingBottom: '56.25%', height: 0, marginTop: 20 }}>
-      <iframe
-        src={src}
-        style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }}
-        frameBorder="0"
-        allowFullScreen
-        allow="encrypted-media"
-        title="Video Player"
-      ></iframe>
+    <div className="player-container">
+      <div className="player-wrapper">
+        <iframe
+          src={src}
+          className="player-iframe"
+          frameBorder="0"
+          allowFullScreen
+          allow="autoplay; encrypted-media"
+          title="Video Player"
+        ></iframe>
+      </div>
+
+      <button className="player-share-btn" onClick={handleShare} title="Copy share link">
+        <FaShareAlt />
+      </button>
+
+      {copied && <span className="share-toast">Copied!</span>}
     </div>
   );
 };

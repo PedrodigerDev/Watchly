@@ -1,0 +1,56 @@
+.media-detail {
+  padding: 20px;
+  color: #f9fafb;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.media-detail h2 {
+  font-size: 2rem;
+  margin-bottom: 20px;
+}
+
+.media-detail-content {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px;
+  align-items: flex-start;
+}
+
+.media-detail-content img {
+  width: 300px;
+  border-radius: 12px;
+  object-fit: cover;
+}
+
+.media-meta {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.media-description {
+  line-height: 1.6;
+  color: #e5e7eb;
+}
+
+.media-rating {
+  font-size: 1.1rem;
+  color: #d1d5db;
+}
+
+.watch-now-btn {
+  padding: 10px 20px;
+  font-size: 1rem;
+  background: #8b5cf6;
+  border: none;
+  border-radius: 8px;
+  color: white;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.watch-now-btn:hover {
+  background: #7c3aed;
+}
