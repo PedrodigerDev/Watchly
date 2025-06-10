@@ -103,6 +103,8 @@ export async function fetchMediaDetails(type, id) {
               episodes
               format
               seasonYear
+              isAdult
+              rating
             }
           }
         `,
@@ -111,11 +113,28 @@ export async function fetchMediaDetails(type, id) {
     });
     const { data } = await res.json();
     return data?.Media;
-  } else {
-    const res = await fetch(`${TMDB_BASE}/${type}/${id}?api_key=${TMDB_API_KEY}`);
-    return await res.json();
   }
+
+  // TMDB
+  const base = `${TMDB_BASE}/${type}/${id}`;
+  const info = await fetch(`${base}?api_key=${TMDB_API_KEY}`).then(r => r.json());
+
+  let rating = null;
+
+if (type === 'movie') {
+  const res = await fetch(`${base}/release_dates?api_key=${TMDB_API_KEY}`).then(r => r.json());
+  const usEntry = res.results?.find(r => r.iso_3166_1 === 'US');
+  const cert = usEntry?.release_dates?.find(d => d.certification)?.certification;
+  rating = cert || 'NR';
+} else if (type === 'tv') {
+  const res = await fetch(`${base}/content_ratings?api_key=${TMDB_API_KEY}`).then(r => r.json());
+  const usRating = res.results?.find(r => r.iso_3166_1 === 'US')?.rating;
+  rating = usRating || 'NR';
 }
+
+  return { ...info, rating };
+}
+
 
 export async function fetchSimilarMedia(type, id) {
   if (type === 'anime') {

@@ -1,6 +1,6 @@
 {
   "short_name": "Watchly",
-  "name": "Watchly — Free Movies, Shows & Anime",
+  "name": "Watchly — Free Movies & Shows",
   "icons": [
     {
       "src": "/icons/icon-192x192.png",
@@ -17,6 +17,6 @@
   "display": "standalone",
   "background_color": "#0f0f0f",
   "theme_color": "#8B5CF6",
-  "description": "Stream full movies, TV shows, and anime for free using the VIDEASY player — all in one place.",
+  "description": "Stream full movies and TV shows for free using the VIDEASY player — all in one place.",
   "orientation": "portrait"
 }

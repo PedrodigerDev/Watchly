@@ -46,7 +46,6 @@ const Search = () => {
       <select value={type} onChange={(e) => setType(e.target.value)}>
         <option value="movie">Movie</option>
         <option value="tv">TV Show</option>
-        <option value="anime">Anime</option>
       </select>
       <button onClick={handleSearch}>Search</button>
 

@@ -56,7 +56,7 @@ const Card = ({ item, type }) => {
   }, [hovered]);
 
   const handleClick = () => {
-    navigate(`/title/${type}/${item.id}`);
+    navigate(`/details/${type}/${item.id}`);
   };
 
   return (

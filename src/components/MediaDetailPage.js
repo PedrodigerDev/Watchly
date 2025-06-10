@@ -17,7 +17,7 @@ const MediaDetailPage = () => {
   const title = media.title?.romaji || media.title || media.name;
   const img = media.coverImage?.large || `https://image.tmdb.org/t/p/w500${media.poster_path}`;
   const description = media.description || media.overview || 'No description available.';
-  const rating = media.adult ? '18+' : media.ageRating || media.contentRating || 'NR';
+  const rating = media.rating || media.contentRating || (media.isAdult ? '18+' : 'NR');
 
   const handleWatchClick = () => {
     const defaultSeason = type === 'tv' ? 1 : undefined;
@@ -32,7 +32,7 @@ const MediaDetailPage = () => {
         <img src={img} alt={title} />
         <div className="media-meta">
           <p className="media-description" dangerouslySetInnerHTML={{ __html: description }} />
-          <p className="media-rating">Age Rating: {rating}</p>
+          <p className="media-rating"><strong>Age Rating:</strong> {rating}</p>
           <button className="watch-now-btn" onClick={handleWatchClick}>▶ Watch Now</button>
         </div>
       </div>

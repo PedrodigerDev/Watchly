@@ -1,26 +1,35 @@
 /* Navbar.css */
 .navbar {
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  justify-content: space-between;
   padding: 12px 24px;
   background-color: #111827;
   color: #f3f4f6;
   border-bottom: 1px solid #1f2937;
+  flex-wrap: wrap;
+  position: relative;
+  z-index: 10; /* ensures it's above the blur layer */
 }
 
+
+/* Logo (left) */
 .logo {
   font-size: 1.5rem;
+  font-weight: 600;
   margin-right: 20px;
 }
 
-.media-type-tabs {
-  position: relative;
+/* Tab section (center) */
+.nav-tabs {
   display: flex;
   gap: 12px;
+  flex: 1;
+  justify-content: center;
+  position: relative;
 }
 
-.media-tab {
+.nav-tab {
   background: none;
   border: none;
   color: #d1d5db;
@@ -28,35 +37,33 @@
   padding: 6px 12px;
   border-radius: 6px;
   cursor: pointer;
-  transition: color 0.3s;
+  transition: color 0.3s ease, background 0.3s ease;
   position: relative;
+  font-weight: 500;
   z-index: 1;
 }
 
-.media-tab:hover {
+.nav-tab:hover {
   color: #8B5CF6;
 }
 
-.media-tab.active {
+.nav-tab.active {
   color: white;
   font-weight: 600;
+  background-color: rgba(139, 92, 246, 0.1);
 }
 
-.media-tab-underline {
-  position: absolute;
-  bottom: 0;
-  height: 3px;
-  background: #8B5CF6;
-  transition: all 0.3s ease;
-  border-radius: 2px;
-  z-index: 0;
-}
-
+/* Search section (right) */
 .search-wrapper {
   position: relative;
+  display: flex;
+  align-items: center;
+  max-width: 240px;
+  width: 100%;
 }
 
 .navbar-search {
+  width: 100%;
   padding: 6px 32px 6px 30px;
   border: 1px solid #4b5563;
   border-radius: 6px;
@@ -81,60 +88,14 @@
   pointer-events: none;
 }
 
-.navbar {
-  display: flex;
-  align-items: center;
-  padding: 10px 20px;
-  background: #121212;
-  color: white;
-  justify-content: space-between;
-}
-
-.nav-tabs {
-  display: flex;
-  gap: 10px;
-}
-
-.nav-tab {
-  background: transparent;
-  border: none;
-  color: white;
-  padding: 8px 12px;
-  font-size: 16px;
-  cursor: pointer;
-  border-radius: 4px;
-  transition: 0.3s;
-}
-
-.nav-tab.active {
-  color: #8B5CF6;
-  font-weight: bold;
-}
-
-.search-wrapper {
-  position: relative;
-}
-
-.nav-search {
-  padding: 6px 30px 6px 30px;
-  border-radius: 20px;
-  border: 1px solid #ccc;
-}
-
-.search-icon {
-  position: absolute;
-  left: 10px;
-  top: 8px;
-  color: gray;
-}
-
 .clear-btn {
   position: absolute;
-  right: 10px;
-  top: 4px;
-  background: transparent;
-  color: #ccc;
-  font-size: 18px;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
   border: none;
+  color: #ccc;
+  font-size: 1rem;
   cursor: pointer;
 }
