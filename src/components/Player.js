@@ -1,3 +1,4 @@
+// src/components/Player.js
 import React, { useEffect, useState } from 'react';
 import { FaShareAlt } from 'react-icons/fa';
 import './Player.css';
@@ -36,13 +37,20 @@ const Player = ({ src }) => {
 
   return (
     <div className="player-container">
-      <div className="player-wrapper">
+      <div
+        className="player-wrapper"
+        onContextMenu={(e) => e.preventDefault()}
+        onMouseDown={(e) => {
+          if (e.button === 1 || e.button === 2) e.preventDefault();
+        }}
+      >
         <iframe
           src={src}
           className="player-iframe"
           frameBorder="0"
           allowFullScreen
           allow="autoplay; encrypted-media"
+          sandbox="allow-scripts allow-same-origin allow-forms allow-presentation"
           title="Video Player"
         ></iframe>
       </div>

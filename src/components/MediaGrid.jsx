@@ -1,13 +1,12 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { useSearchParams } from 'react-router-dom';
 import Card from './Card';
 import {
-  fetchAll,
   fetchTrending,
   fetchAllByGenre,
   searchTMDB,
   searchAnilist,
 } from '../api';
+import AdBanner from './AdBanner';
 import './MediaGrid.css';
 
 const genresMap = {
@@ -28,29 +27,27 @@ const genresMap = {
     { id: 10751, name: 'Family' },
   ],
   anime: [
-    'Action', 'Adventure', 'Comedy', 'Drama', 'Fantasy', 'Horror', 'Romance', 'Sci-Fi'
+    'Action', 'Adventure', 'Comedy', 'Drama', 'Fantasy', 'Horror', 'Romance', 'Sci-Fi',
   ],
 };
 
-const MediaGrid = () => {
-  const [params] = useSearchParams();
-  const type = params.get('type') || 'movie';
-
+const MediaGrid = ({ type = 'movie' }) => {
   const [trending, setTrending] = useState([]);
   const [genreResults, setGenreResults] = useState({});
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState([]);
   const searchTimeout = useRef(null);
   const scrollRefs = useRef({});
-  const visibleCounts = useRef({});
 
   useEffect(() => {
+    setTrending([]);
+    setGenreResults({});
     fetchTrending(type).then(setTrending);
+
     const genres = genresMap[type] || [];
     genres.forEach((genre) => {
       const idOrName = typeof genre === 'string' ? genre : genre.id;
       fetchAllByGenre(type, idOrName).then((data) => {
-        visibleCounts.current[idOrName] = 10;
         setGenreResults((prev) => ({ ...prev, [idOrName]: data }));
       });
     });
@@ -59,6 +56,7 @@ const MediaGrid = () => {
   useEffect(() => {
     if (searchTimeout.current) clearTimeout(searchTimeout.current);
     if (!searchQuery) return setSearchResults([]);
+
     searchTimeout.current = setTimeout(async () => {
       const results =
         type === 'anime'
@@ -78,21 +76,14 @@ const MediaGrid = () => {
     }
   };
 
-  const handleLazyLoad = (idOrName) => {
-    visibleCounts.current[idOrName] += 10;
-    setGenreResults((prev) => ({ ...prev }));
-  };
-
   return (
     <div className="media-grid-wrapper">
-      <div className="search-bar-container">
-        <input
-          className="search-bar"
-          placeholder={`Search ${type}...`}
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-        />
-      </div>
+      <input
+        className="search-bar"
+        placeholder={`Search ${type}...`}
+        value={searchQuery}
+        onChange={(e) => setSearchQuery(e.target.value)}
+      />
 
       {searchQuery && (
         <div className="section">
@@ -116,26 +107,28 @@ const MediaGrid = () => {
         </div>
       </div>
 
-      {(genresMap[type] || []).map((genre) => {
+      {(genresMap[type] || []).map((genre, index) => {
         const idOrName = typeof genre === 'string' ? genre : genre.id;
         const label = typeof genre === 'string' ? genre : genre.name;
         const results = genreResults[idOrName] || [];
-        const visibleCount = visibleCounts.current[idOrName] || 10;
 
         return (
-          <div key={idOrName} className="section">
-            <h2>{label}</h2>
-            <button className="scroll-btn left" onClick={() => scroll(idOrName, 'left')}>&lt;</button>
-            <button className="scroll-btn right" onClick={() => scroll(idOrName, 'right')}>&gt;</button>
-            <div className="scroll-container" ref={(el) => (scrollRefs.current[idOrName] = el)}>
-              {results.slice(0, visibleCount).map((item) => (
-                <Card key={item.id} item={item} type={type} />
-              ))}
-              {visibleCount < results.length && (
-                <div className="load-more-trigger" onMouseEnter={() => handleLazyLoad(idOrName)}></div>
-              )}
+          <React.Fragment key={idOrName}>
+            <div className="section">
+              <h2>{label}</h2>
+              <button className="scroll-btn left" onClick={() => scroll(idOrName, 'left')}>&lt;</button>
+              <button className="scroll-btn right" onClick={() => scroll(idOrName, 'right')}>&gt;</button>
+              <div className="scroll-container" ref={(el) => (scrollRefs.current[idOrName] = el)}>
+                {results.map((item) => (
+                  <Card key={item.id} item={item} type={type} />
+                ))}
+              </div>
             </div>
-          </div>
+
+            {(index + 1) % 2 === 0 && (
+              <AdBanner slot="5830833564" />
+            )}
+          </React.Fragment>
         );
       })}
     </div>
