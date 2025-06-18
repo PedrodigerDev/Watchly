@@ -1,179 +1,161 @@
+// src/api.js
 const TMDB_API_KEY = 'd0629388a91b8c64fa792bb0988fa654';
-const TMDB_BASE = 'https://api.themoviedb.org/3';
-const ANILIST_BASE = 'https://graphql.anilist.co';
-const VIDEASY_BASE = 'https://player.videasy.net';
+const BASE_URL = 'https://api.themoviedb.org/3';
+const ANILIST_URL = 'https://graphql.anilist.co';
 
-export async function fetchAll(type = 'movie', page = 1) {
-  const res = await fetch(`${TMDB_BASE}/${type}/popular?api_key=${TMDB_API_KEY}&page=${page}`);
+export const fetchTrending = async (type = 'movie') => {
+  const res = await fetch(`${BASE_URL}/trending/${type}/week?api_key=${TMDB_API_KEY}`);
   const data = await res.json();
   return data.results || [];
-}
+};
 
-export async function fetchTrending(type = 'movie') {
-  const res = await fetch(`${TMDB_BASE}/trending/${type}/week?api_key=${TMDB_API_KEY}`);
+export const fetchAllByGenre = async (type, genreIdOrName) => {
+  if (type === 'anime') return fetchAnimeByGenre(genreIdOrName);
+  const url = `${BASE_URL}/discover/${type}?api_key=${TMDB_API_KEY}&with_genres=${genreIdOrName}`;
+  const res = await fetch(url);
   const data = await res.json();
   return data.results || [];
-}
+};
 
-export async function fetchAllByGenre(type, genreId, page = 1) {
-  if (type === 'anime') return fetchAnimeByGenre(genreId, page);
-  const res = await fetch(
-    `${TMDB_BASE}/discover/${type}?api_key=${TMDB_API_KEY}&with_genres=${genreId}&page=${page}`
-  );
-  const data = await res.json();
-  return data.results || [];
-}
-
-export async function searchTMDB(type, query) {
-  const res = await fetch(`${TMDB_BASE}/search/${type}?api_key=${TMDB_API_KEY}&query=${encodeURIComponent(query)}`);
-  const data = await res.json();
-  return data.results || [];
-}
-
-export async function searchAnilist(query) {
-  const res = await fetch(ANILIST_BASE, {
+export const fetchAnimeByGenre = async (genreName) => {
+  const query = `
+    query ($genre: String) {
+      Page(perPage: 20) {
+        media(genre_in: [$genre], type: ANIME, sort: POPULARITY_DESC) {
+          id
+          title {
+            romaji
+          }
+          coverImage {
+            large
+          }
+          description
+          isAdult
+        }
+      }
+    }
+  `;
+  const res = await fetch(ANILIST_URL, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      query: `
-        query ($search: String) {
-          Page(perPage: 10) {
-            media(search: $search, type: ANIME) {
-              id
-              title { romaji }
-              coverImage { large }
-              description
-              genres
-              averageScore
-              episodes
-              seasonYear
-              format
-            }
-          }
-        }
-      `,
-      variables: { search: query },
-    }),
+    body: JSON.stringify({ query, variables: { genre: genreName } })
   });
-  const { data } = await res.json();
-  return data?.Page?.media || [];
-}
+  const json = await res.json();
+  return json.data?.Page?.media || [];
+};
 
-export async function fetchAnimeByGenre(genre, page = 1) {
-  const res = await fetch(ANILIST_BASE, {
+export const searchTMDB = async (type, query) => {
+  const url = `${BASE_URL}/search/${type}?api_key=${TMDB_API_KEY}&query=${encodeURIComponent(query)}`;
+  const res = await fetch(url);
+  const data = await res.json();
+  return data.results || [];
+};
+
+export const searchAnilist = async (query) => {
+  const gqlQuery = `
+    query ($search: String) {
+      Page(perPage: 20) {
+        media(search: $search, type: ANIME) {
+          id
+          title {
+            romaji
+          }
+          coverImage {
+            large
+          }
+          description
+          isAdult
+        }
+      }
+    }
+  `;
+  const res = await fetch(ANILIST_URL, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      query: `
-        query ($genre: String, $page: Int) {
-          Page(page: $page, perPage: 10) {
-            media(genre_in: [$genre], type: ANIME, sort: POPULARITY_DESC) {
-              id
-              title { romaji }
-              coverImage { large }
-              description
-              averageScore
-              genres
-            }
-          }
-        }
-      `,
-      variables: { genre, page },
-    }),
+    body: JSON.stringify({ query: gqlQuery, variables: { search: query } })
   });
-  const { data } = await res.json();
-  return data?.Page?.media || [];
-}
+  const json = await res.json();
+  return json.data?.Page?.media || [];
+};
 
-export async function fetchMediaDetails(type, id) {
+export const fetchMediaDetails = async (type, id) => {
   if (type === 'anime') {
-    const res = await fetch(ANILIST_BASE, {
+    const query = `
+      query ($id: Int) {
+        Media(id: $id, type: ANIME) {
+          id
+          title {
+            romaji
+          }
+          coverImage {
+            large
+          }
+          description
+          isAdult
+          episodes
+        }
+      }
+    `;
+    const res = await fetch('https://graphql.anilist.co', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        query: `
-          query ($id: Int) {
-            Media(id: $id, type: ANIME) {
-              id
-              title { romaji }
-              description
-              coverImage { large }
-              averageScore
-              genres
-              episodes
-              format
-              seasonYear
-              isAdult
-              rating
-            }
-          }
-        `,
-        variables: { id: parseInt(id) },
-      }),
+      body: JSON.stringify({ query, variables: { id: parseInt(id) } })
     });
-    const { data } = await res.json();
-    return data?.Media;
-  }
+    const json = await res.json();
+    const media = json.data?.Media || null;
 
-  // TMDB
-  const base = `${TMDB_BASE}/${type}/${id}`;
-  const info = await fetch(`${base}?api_key=${TMDB_API_KEY}`).then(r => r.json());
-
-  let rating = null;
-
-if (type === 'movie') {
-  const res = await fetch(`${base}/release_dates?api_key=${TMDB_API_KEY}`).then(r => r.json());
-  const usEntry = res.results?.find(r => r.iso_3166_1 === 'US');
-  const cert = usEntry?.release_dates?.find(d => d.certification)?.certification;
-  rating = cert || 'NR';
-} else if (type === 'tv') {
-  const res = await fetch(`${base}/content_ratings?api_key=${TMDB_API_KEY}`).then(r => r.json());
-  const usRating = res.results?.find(r => r.iso_3166_1 === 'US')?.rating;
-  rating = usRating || 'NR';
-}
-
-  return { ...info, rating };
-}
-
-
-export async function fetchSimilarMedia(type, id) {
-  if (type === 'anime') {
-    const media = await fetchMediaDetails(type, id);
-    const genre = media?.genres?.[0];
-    if (!genre) return [];
-    return fetchAnimeByGenre(genre);
+    // Add fallback rating
+    return {
+      ...media,
+      rating: media?.isAdult ? '18+' : 'NR'
+    };
   } else {
-    const res = await fetch(`${TMDB_BASE}/${type}/${id}/similar?api_key=${TMDB_API_KEY}`);
-    const data = await res.json();
-    return data.results || [];
+    const detailRes = await fetch(`${BASE_URL}/${type}/${id}?api_key=${TMDB_API_KEY}`);
+    const detailData = await detailRes.json();
+
+    let rating = 'NR';
+
+    if (type === 'movie') {
+      const certRes = await fetch(`${BASE_URL}/movie/${id}/release_dates?api_key=${TMDB_API_KEY}`);
+      const certData = await certRes.json();
+      const us = certData.results?.find(r => r.iso_3166_1 === 'US');
+      rating = us?.release_dates?.[0]?.certification || 'NR';
+    } else if (type === 'tv') {
+      const ratingRes = await fetch(`${BASE_URL}/tv/${id}/content_ratings?api_key=${TMDB_API_KEY}`);
+      const ratingData = await ratingRes.json();
+      const us = ratingData.results?.find(r => r.iso_3166_1 === 'US');
+      rating = us?.rating || 'NR';
+    }
+
+    return {
+      ...detailData,
+      rating
+    };
   }
-}
+};
 
-export function getWatchUrl(type, id, options = {}) {
-  let url = '';
+export const fetchSimilarMedia = async (type, id) => {
+  if (type === 'anime') return []; // Optional: add Anilist recommendations
+  const res = await fetch(`${BASE_URL}/${type}/${id}/similar?api_key=${TMDB_API_KEY}`);
+  const data = await res.json();
+  return data.results || [];
+};
 
-  if (type === 'movie') {
-    url = `${VIDEASY_BASE}/movie/${id}`;
-  } else if (type === 'tv') {
-    const { season = 1, episode = 1 } = options;
-    url = `${VIDEASY_BASE}/tv/${id}/${season}/${episode}`;
-  } else if (type === 'anime') {
-    const { episode = 1, dub = false } = options;
-    url = `${VIDEASY_BASE}/anime/${id}/${episode}?dub=${dub}`;
+export const fetchSeasons = async (tvId) => {
+  const res = await fetch(`${BASE_URL}/tv/${tvId}?api_key=${TMDB_API_KEY}`);
+  const data = await res.json();
+  return data.seasons || [];
+};
+
+export const fetchEpisodes = async (tvId, seasonNumber) => {
+  const res = await fetch(`${BASE_URL}/tv/${tvId}/season/${seasonNumber}?api_key=${TMDB_API_KEY}`);
+  const data = await res.json();
+  return data.episodes || [];
+};
+
+export const getWatchUrl = (type, id, season = 1, episode = 1) => {
+  if (type === 'tv' || type === 'anime') {
+    return `https://player.videasy.net/tv/${id}/${season}/${episode}`;
   }
-
-  const { color = '8B5CF6', progress, nextEpisode, episodeSelector, autoplayNextEpisode } = options;
-  const params = [];
-
-  if (color) params.push(`color=${color}`);
-  if (progress) params.push(`progress=${progress}`);
-  if (nextEpisode) params.push('nextEpisode=true');
-  if (episodeSelector) params.push('episodeSelector=true');
-  if (autoplayNextEpisode) params.push('autoplayNextEpisode=true');
-
-  if (params.length) {
-    url += (url.includes('?') ? '&' : '?') + params.join('&');
-  }
-
-  return url;
-}
+  return `https://player.videasy.net/movie/${id}`;
+};
