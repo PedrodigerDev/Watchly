@@ -1,5 +1,5 @@
 // src/App.js
-import React from 'react';
+import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation, useSearchParams } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
 
@@ -14,9 +14,33 @@ const MainContent = () => {
   const [params] = useSearchParams();
   const type = params.get('type') || 'movie'; // Grab type from ?type query param
 
+  // Load AdSense when component mounts
+  useEffect(() => {
+    try {
+      (window.adsbygoogle = window.adsbygoogle || []).push({});
+    } catch (e) {
+      console.error('AdSense error:', e);
+    }
+  }, []);
+
   return (
     <>
+      {/* Netflix-style header */}
       <Navbar />
+
+      {/* Static AdSense area (compliant placement) */}
+      <section className="ad-section">
+        <ins
+          className="adsbygoogle"
+          style={{ display: 'block' }}
+          data-ad-client="ca-pub-3645462764382372"
+          data-ad-slot="1234567890"  // Replace with your actual ad slot ID
+          data-ad-format="auto"
+          data-full-width-responsive="true"
+        ></ins>
+      </section>
+
+      {/* Animated page transitions */}
       <AnimatePresence mode="wait">
         <motion.div
           key={type} // use `type` as animation key
