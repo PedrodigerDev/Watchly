@@ -1,82 +1,27 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
-import { FaSearch } from 'react-icons/fa';
+// src/components/Navbar.js
+import React, { useState, useEffect } from 'react';
 import './Navbar.css';
 
-const Navbar = ({ onSearch }) => {
-  const [params] = useSearchParams();
-  const type = params.get('type') || 'movie';
-  const [searchQuery, setSearchQuery] = useState('');
-  const timeoutRef = useRef(null);
-  const navigate = useNavigate();
+export default function Navbar() {
+  const [isScrolled, setIsScrolled] = useState(false);
 
-  // Refs and state for underline animation
-  const tabRefs = useRef({});
-  const [underlineStyle, setUnderlineStyle] = useState({ left: 0, width: 0 });
-
-  const handleTabClick = (newType) => {
-    navigate(`/?type=${newType}`);
-    setSearchQuery('');
-    if (onSearch) onSearch('');
-  };
-
-  const handleInputChange = (e) => {
-    const value = e.target.value;
-    setSearchQuery(value);
-    if (timeoutRef.current) clearTimeout(timeoutRef.current);
-    timeoutRef.current = setTimeout(() => {
-      if (onSearch) onSearch(value);
-    }, 300);
-  };
-
-  const clearSearch = () => {
-    setSearchQuery('');
-    if (onSearch) onSearch('');
-  };
-
-  // Underline movement
   useEffect(() => {
-    const activeTab = tabRefs.current[type];
-    if (activeTab) {
-      const { offsetLeft, offsetWidth } = activeTab;
-      setUnderlineStyle({ left: offsetLeft, width: offsetWidth });
-    }
-  }, [type]);
+    const onScroll = () => setIsScrolled(window.scrollY > 50);
+    window.addEventListener('scroll', onScroll);
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
 
   return (
-    <nav className="navbar">
-      <div className="logo">🎬 Watchly</div>
-
-      <div className="nav-tabs">
-        {['movie', 'tv'].map((tab) => (
-          <button
-            key={tab}
-            ref={(el) => (tabRefs.current[tab] = el)}
-            className={`nav-tab ${type === tab ? 'active' : ''}`}
-            onClick={() => handleTabClick(tab)}
-          >
-            {tab.toUpperCase()}
-          </button>
-        ))}
-        <span className="nav-underline" style={underlineStyle}></span>
+    <header className={`navbar ${isScrolled ? 'scrolled' : ''}`}>
+      <div className="navbar-left">
+        <h1 className="logo">Watchly</h1>
+        <nav>
+          <a href="/">Home</a>
+          <a href="/?type=movie">Movies</a>
+          <a href="/?type=tv">TV Shows</a>
+          <a href="/my-list">My List</a>
+        </nav>
       </div>
-
-      <div className="search-wrapper">
-        <FaSearch className="search-icon" />
-        <input
-          className="navbar-search"
-          placeholder={`Search ${type}...`}
-          value={searchQuery}
-          onChange={handleInputChange}
-        />
-        {searchQuery && (
-          <button className="clear-btn" onClick={clearSearch}>
-            ×
-          </button>
-        )}
-      </div>
-    </nav>
+    </header>
   );
-};
-
-export default Navbar;
+}
