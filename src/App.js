@@ -12,9 +12,9 @@ import './App.css';
 const MainContent = () => {
   const location = useLocation();
   const [params] = useSearchParams();
-  const type = params.get('type') || 'movie'; // Grab type from ?type query param
+  const type = params.get('type') || 'movie';
 
-  // Load AdSense when component mounts
+  // Initialize Google Ads when component mounts
   useEffect(() => {
     try {
       (window.adsbygoogle = window.adsbygoogle || []).push({});
@@ -25,25 +25,23 @@ const MainContent = () => {
 
   return (
     <>
-      {/* Netflix-style header */}
       <Navbar />
 
-      {/* Static AdSense area (compliant placement) */}
+      {/* Static ad section below navbar */}
       <section className="ad-section">
         <ins
           className="adsbygoogle"
           style={{ display: 'block' }}
           data-ad-client="ca-pub-3645462764382372"
-          data-ad-slot="1234567890"  // Replace with your actual ad slot ID
+          data-ad-slot="1234567890"  // Replace with your real AdSense slot ID
           data-ad-format="auto"
           data-full-width-responsive="true"
         ></ins>
       </section>
 
-      {/* Animated page transitions */}
       <AnimatePresence mode="wait">
         <motion.div
-          key={type} // use `type` as animation key
+          key={type}
           className="motion-wrapper"
           initial={{ opacity: 0, backdropFilter: 'blur(5px)' }}
           animate={{ opacity: 1, backdropFilter: 'blur(0px)' }}
@@ -61,12 +59,10 @@ const MainContent = () => {
   );
 };
 
-function App() {
+export default function App() {
   return (
     <Router>
       <MainContent />
     </Router>
   );
 }
-
-export default App;
