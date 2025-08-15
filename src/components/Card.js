@@ -13,16 +13,14 @@ const Card = ({ item, type }) => {
   const title =
     item?.title?.romaji || item?.title || item?.name || item?.original_title || item?.original_name;
 
-  // Image: prefer poster; fallback to anilist cover or backdrop
   const img = useMemo(() => {
     if (item?.poster_path) return `https://image.tmdb.org/t/p/w300${item.poster_path}`;
     if (item?.coverImage?.large) return item.coverImage.large;
     if (item?.backdrop_path) return `https://image.tmdb.org/t/p/w500${item.backdrop_path}`;
-    return ''; // fallback handled in CSS
+    return '';
   }, [item]);
 
   const ratioClass = useMemo(() => {
-    // If only backdrop available (no poster), treat as landscape
     return item?.backdrop_path && !item?.poster_path ? 'landscape' : 'portrait';
   }, [item]);
 
@@ -42,7 +40,6 @@ const Card = ({ item, type }) => {
   };
 
   useEffect(() => {
-    // Fetch trailer after 1s hover (non-anime only)
     if (hovered && !trailerUrl && type !== 'anime') {
       timerRef.current = setTimeout(async () => {
         try {
@@ -86,7 +83,6 @@ const Card = ({ item, type }) => {
       }}
     >
       <div className="card-thumbnail">
-        {/* Poster or Trailer */}
         {!hovered || !trailerUrl ? (
           img ? (
             <img src={img} alt={title} loading="lazy" />
@@ -103,7 +99,7 @@ const Card = ({ item, type }) => {
           />
         )}
 
-        {/* Netflix-style overlay on hover */}
+        {/* Hover-only overlay */}
         <div className="card-overlay">
           <div className="overlay-top">
             <button className="watchlist-btn overlay-btn" onClick={toggleWatchlist}>
@@ -116,12 +112,9 @@ const Card = ({ item, type }) => {
         </div>
       </div>
 
-      {/* Mobile/Non-hover info (kept for accessibility & mobile UX) */}
+      {/* Below-thumb info (title only, for mobile/touch users) */}
       <div className="card-info">
         <p className="card-title">{title}</p>
-        <button className="watchlist-btn" onClick={toggleWatchlist}>
-          {isInWatchlist() ? '★' : '☆'}
-        </button>
       </div>
     </div>
   );
