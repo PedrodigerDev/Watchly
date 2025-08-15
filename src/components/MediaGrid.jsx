@@ -70,7 +70,7 @@ const MediaGrid = ({ type = 'movie' }) => {
     const container = scrollRefs.current[key];
     if (container) {
       container.scrollBy({
-        left: dir === 'left' ? -300 : 300,
+        left: dir === 'left' ? -window.innerWidth * 0.8 : window.innerWidth * 0.8,
         behavior: 'smooth',
       });
     }
@@ -78,6 +78,7 @@ const MediaGrid = ({ type = 'movie' }) => {
 
   return (
     <div className="media-grid-wrapper">
+      {/* Search Bar */}
       <input
         className="search-bar"
         placeholder={`Search ${type}...`}
@@ -85,9 +86,17 @@ const MediaGrid = ({ type = 'movie' }) => {
         onChange={(e) => setSearchQuery(e.target.value)}
       />
 
+      {/* Static Ad above content for AdSense compliance */}
+      <div className="static-ad-section">
+        <AdBanner slot="5830833564" />
+      </div>
+
+      {/* Search Results */}
       {searchQuery && (
         <div className="section">
           <h2>Search Results</h2>
+          <div className="scroll-btn left" onClick={() => scroll('search', 'left')}>&lt;</div>
+          <div className="scroll-btn right" onClick={() => scroll('search', 'right')}>&gt;</div>
           <div className="scroll-container" ref={(el) => (scrollRefs.current['search'] = el)}>
             {searchResults.map((item) => (
               <Card key={item.id} item={item} type={type} />
@@ -96,10 +105,11 @@ const MediaGrid = ({ type = 'movie' }) => {
         </div>
       )}
 
+      {/* Trending */}
       <div className="section">
         <h2>Trending</h2>
-        <button className="scroll-btn left" onClick={() => scroll('trending', 'left')}>&lt;</button>
-        <button className="scroll-btn right" onClick={() => scroll('trending', 'right')}>&gt;</button>
+        <div className="scroll-btn left" onClick={() => scroll('trending', 'left')}>&lt;</div>
+        <div className="scroll-btn right" onClick={() => scroll('trending', 'right')}>&gt;</div>
         <div className="scroll-container" ref={(el) => (scrollRefs.current['trending'] = el)}>
           {trending.map((item) => (
             <Card key={item.id} item={item} type={type} />
@@ -107,6 +117,7 @@ const MediaGrid = ({ type = 'movie' }) => {
         </div>
       </div>
 
+      {/* Genres */}
       {(genresMap[type] || []).map((genre, index) => {
         const idOrName = typeof genre === 'string' ? genre : genre.id;
         const label = typeof genre === 'string' ? genre : genre.name;
@@ -116,8 +127,8 @@ const MediaGrid = ({ type = 'movie' }) => {
           <React.Fragment key={idOrName}>
             <div className="section">
               <h2>{label}</h2>
-              <button className="scroll-btn left" onClick={() => scroll(idOrName, 'left')}>&lt;</button>
-              <button className="scroll-btn right" onClick={() => scroll(idOrName, 'right')}>&gt;</button>
+              <div className="scroll-btn left" onClick={() => scroll(idOrName, 'left')}>&lt;</div>
+              <div className="scroll-btn right" onClick={() => scroll(idOrName, 'right')}>&gt;</div>
               <div className="scroll-container" ref={(el) => (scrollRefs.current[idOrName] = el)}>
                 {results.map((item) => (
                   <Card key={item.id} item={item} type={type} />
@@ -125,8 +136,11 @@ const MediaGrid = ({ type = 'movie' }) => {
               </div>
             </div>
 
+            {/* Keep between-rows ads, but styled */}
             {(index + 1) % 2 === 0 && (
-              <AdBanner slot="5830833564" />
+              <div className="inline-ad-section">
+                <AdBanner slot="5830833564" />
+              </div>
             )}
           </React.Fragment>
         );
