@@ -35,9 +35,11 @@
 .scroll-container {
   display: flex;
   overflow-x: auto;
+  overflow-y: visible; /* allow cards to grow outside row vertically */
   gap: 12px;
   padding-bottom: 12px;
   scroll-behavior: smooth;
+  position: relative; /* for z-index layering */
 }
 .scroll-container::-webkit-scrollbar {
   display: none;
