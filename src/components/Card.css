@@ -3,7 +3,7 @@
   cursor: pointer;
   transform-origin: center;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
-  position: relative; /* needed for z-index on hover */
+  position: relative; /* for z-index stacking */
 }
 
 .media-card.portrait { width: 200px; }
@@ -42,8 +42,8 @@
 
 /* Hover zoom (Netflix feel) */
 .media-card:hover {
-  transform: scale(1.4); /* bigger pop-out */
-  z-index: 10; /* bring above neighbors */
+  transform: scale(1.4);
+  z-index: 20; /* higher than scroll buttons & other rows */
 }
 .media-card:hover .card-thumbnail img {
   transform: scale(1.08);
