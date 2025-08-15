@@ -1,72 +1,150 @@
-/* Card.css */
 .media-card {
   flex: 0 0 auto;
   cursor: pointer;
   transform-origin: center;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   position: relative; /* for z-index stacking */
-  border-radius: 6px;
 }
 
-.media-card.is-hovered {
-  transform: scale(1.4);
-  z-index: 20; /* on top of everything else */
-}
+.media-card.portrait { width: 200px; }
+.media-card.landscape { width: 320px; }
 
+/* Match your row CSS which sets width too; these keep the ratio perfect */
 .card-thumbnail {
   position: relative;
   border-radius: 6px;
   overflow: hidden;
 }
 
+/* Aspect ratios (Netflix-like) */
+.media-card.portrait .card-thumbnail { aspect-ratio: 2 / 3; }
+.media-card.landscape .card-thumbnail { aspect-ratio: 16 / 9; }
+
 .card-thumbnail img,
 .card-thumbnail iframe {
-  display: block;
   width: 100%;
-  height: auto;
-  border-radius: 6px;
+  height: 100%;
+  display: block;
+  object-fit: cover;
 }
 
-.card-info {
-  padding: 8px;
-  font-size: 0.9rem;
-  text-align: left;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+/* Fallback thumbnail */
+.img-fallback {
+  width: 100%;
+  height: 100%;
+  display: grid;
+  place-items: center;
+  background: #222;
+  color: #bbb;
+  font-weight: 700;
+  font-size: 2rem;
 }
 
-/* Hover overlay for watchlist button */
-.card-hover-overlay {
+/* Hover zoom (Netflix feel) */
+.media-card:hover {
+  transform: scale(1.4);
+  z-index: 20; /* higher than scroll buttons & other rows */
+}
+.media-card:hover .card-thumbnail img {
+  transform: scale(1.08);
+  transition: transform 0.35s ease;
+}
+
+/* Overlay that fades in on hover */
+.card-overlay {
   position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
+  inset: 0;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  background: linear-gradient(
+    to top,
+    rgba(0,0,0,0.75) 0%,
+    rgba(0,0,0,0.2) 40%,
+    rgba(0,0,0,0) 70%
+  );
+}
+.media-card.is-hovered .card-overlay,
+.media-card:hover .card-overlay {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.overlay-top {
   display: flex;
   justify-content: flex-end;
-  align-items: flex-start;
   padding: 8px;
-  background: linear-gradient(to top, transparent 60%, rgba(0,0,0,0.4) 100%);
-  opacity: 0;
-  transition: opacity 0.2s ease;
+}
+.overlay-bottom {
+  padding: 10px 12px;
+}
+.overlay-title {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #fff;
+  text-shadow: 0 2px 8px rgba(0,0,0,0.6);
 }
 
-.media-card.is-hovered .card-hover-overlay {
-  opacity: 1;
-}
-
+/* Watchlist star */
 .watchlist-btn {
-  background: rgba(0, 0, 0, 0.6);
-  border: none;
-  color: gold;
-  font-size: 1.4rem;
-  border-radius: 50%;
-  cursor: pointer;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.25);
+  color: #fff;
+  border-radius: 6px;
   padding: 6px 10px;
-  transition: background 0.2s;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.1s ease;
+}
+.watchlist-btn:hover {
+  background: rgba(255,255,255,0.2);
+}
+.overlay-btn {
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  display: grid;
+  place-items: center;
+  font-size: 1.1rem;
 }
 
-.watchlist-btn:hover {
-  background: rgba(0, 0, 0, 0.8);
+/* Below-thumb info (mobile / non-hover) */
+.card-info {
+  display: flex;
+  align-items: center;
+  justify-content: center; /* center title now */
+  gap: 8px;
+  padding: 8px 2px 0;
+}
+
+.card-info .watchlist-btn {
+  display: none; /* no watchlist button here */
+}
+
+.card-title {
+  margin: 0;
+  color: #fff;
+  font-size: 0.9rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* On desktop hover, prefer overlay and hide the below-thumb row to reduce duplication */
+@media (hover: hover) {
+  .media-card.is-hovered .card-info {
+    opacity: 0;
+    visibility: hidden;
+  }
+}
+
+/* Responsive sizes */
+@media (max-width: 768px) {
+  .media-card.portrait { width: 140px; }
+  .media-card.landscape { width: 240px; }
 }
