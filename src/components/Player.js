@@ -50,7 +50,7 @@ const Player = ({ src }) => {
           frameBorder="0"
           allowFullScreen
           allow="autoplay; encrypted-media"
-          sandbox="allow-scripts allow-same-origin allow-forms allow-presentation"
+         // sandbox="allow-scripts allow-same-origin allow-forms allow-presentation" // Doesnt work with videasy.net "This content cannot be displayed with sandbox restrictions."
           title="Video Player"
         ></iframe>
       </div>
