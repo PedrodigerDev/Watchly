@@ -20,6 +20,10 @@ export function getVidSrcUrl({ type = "movie", imdb, tmdb, season, episode, dsLa
   return `${url}?${params.toString()}`;
 }
 
-export function getVidEasyUrl({ imdbId }) {
-  return `${VIDEASYDOMAIN}/embed/${imdbId}`; 
+// Fixed getVidEasyUrl
+export function getVidEasyUrl({ type = "movie", imdbId, season, episode }) {
+  if (type === "tv" && season && episode) {
+    return `${VIDEASYDOMAIN}/tv/${imdbId}/${season}/${episode}`;
+  }
+  return `${VIDEASYDOMAIN}/movie/${imdbId}`;
 }
