@@ -1,8 +1,8 @@
 // src/components/WatchPage.jsx
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { fetchMediaDetails } from "../api";
-import { getVidSrcUrl, getVidEasyUrl } from "../utils/providers"; // new
+import { getVidSrcUrl, getVidEasyUrl } from "../utils/providers";
 import Player from "./Player";
 import "./WatchPage.css";
 
@@ -14,10 +14,9 @@ const WatchPage = () => {
   const [selectedSeason, setSelectedSeason] = useState(Number(season) || 1);
   const [selectedEpisode, setSelectedEpisode] = useState(Number(episode) || 1);
   const [episodeList, setEpisodeList] = useState([]);
-
-  // NEW: track provider (default to vidsrc)
   const [provider, setProvider] = useState("vidsrc");
 
+  // Fetch media details
   useEffect(() => {
     fetchMediaDetails(type, id).then((data) => {
       setMedia(data);
@@ -31,10 +30,7 @@ const WatchPage = () => {
         } else {
           const fallbackEpisodes = Array.from(
             { length: currentSeason?.episode_count || 1 },
-            (_, i) => ({
-              episode_number: i + 1,
-              name: "",
-            })
+            (_, i) => ({ episode_number: i + 1, name: "" })
           );
           setEpisodeList(fallbackEpisodes);
         }
@@ -42,12 +38,14 @@ const WatchPage = () => {
     });
   }, [type, id, selectedSeason]);
 
+  // Handle season change
   const handleSeasonClick = (seasonNum) => {
     setSelectedSeason(seasonNum);
     setSelectedEpisode(1);
     navigate(`/watch/${type}/${id}/${seasonNum}/1`);
   };
 
+  // Handle episode change
   const handleEpisodeClick = (epNum) => {
     setSelectedEpisode(epNum);
     navigate(`/watch/${type}/${id}/${selectedSeason}/${epNum}`);
@@ -56,20 +54,27 @@ const WatchPage = () => {
   const title =
     media?.title?.romaji || media?.title || media?.name || "Loading...";
 
-  // Build video src depending on provider
-  let videoSrc = "";
-  if (provider === "vidsrc") {
-    videoSrc = getVidSrcUrl({
-      type,
-      imdb: id.startsWith("tt") ? id : undefined,
-      tmdb: !id.startsWith("tt") ? id : undefined,
-      season: type === "tv" ? selectedSeason : undefined,
-      episode: type === "tv" ? selectedEpisode : undefined,
-      autoplay: true,
-    });
-  } else if (provider === "videasy") {
-    videoSrc = getVidEasyUrl({ imdbId: id });
-  }
+  // Memoize video URL to recalc when dependencies change
+  const videoSrc = useMemo(() => {
+    if (provider === "vidsrc") {
+      return getVidSrcUrl({
+        type,
+        imdb: id.startsWith("tt") ? id : undefined,
+        tmdb: !id.startsWith("tt") ? id : undefined,
+        season: type === "tv" ? selectedSeason : undefined,
+        episode: type === "tv" ? selectedEpisode : undefined,
+        autoplay: true,
+      });
+    } else if (provider === "videasy") {
+      return getVidEasyUrl({
+        type,
+        imdbId: id,
+        season: type === "tv" ? selectedSeason : undefined,
+        episode: type === "tv" ? selectedEpisode : undefined,
+      });
+    }
+    return "";
+  }, [provider, type, id, selectedSeason, selectedEpisode]);
 
   return (
     <div className="watch-page">
@@ -91,8 +96,10 @@ const WatchPage = () => {
         </button>
       </div>
 
+      {/* Video Player */}
       <Player src={videoSrc} />
 
+      {/* Season & Episode Selectors */}
       {(type === "tv" || type === "anime") && (
         <div className="selectors-wrapper">
           {media?.seasons?.length > 0 && (
@@ -128,9 +135,7 @@ const WatchPage = () => {
                     title={ep.name || `Episode ${ep.episode_number}`}
                   >
                     Ep {ep.episode_number}
-                    {ep.name && (
-                      <span className="ep-name"> — {ep.name}</span>
-                    )}
+                    {ep.name && <span className="ep-name"> — {ep.name}</span>}
                   </button>
                 ))}
               </div>
