@@ -1,8 +1,8 @@
 // Replace the base URL if your VidEasy embed differs.
 const VidEasyPlayer = ({ imdbId, season, episode }) => {
   const path = season && episode
-    ? `https://player.videasy.org/tv/${imdbId}/${season}/${episode}`
-    : `https://player.videasy.org/movie/${imdbId}`;
+    ? `https://player.videasy.net/tv/${imdbId}/${season}/${episode}`
+    : `https://player.videasy.net/movie/${imdbId}`;
 
   return (
     <div style={{ position: "relative", paddingTop: "56.25%" }}>
