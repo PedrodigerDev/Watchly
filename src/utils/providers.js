@@ -21,7 +21,8 @@ export function getVidSrcUrl({ type = "movie", imdb, tmdb, season, episode, dsLa
 }
 
 // Fixed getVidEasyUrl
-export function getVidEasyUrl({ type = "movie", imdbId, season, episode }) {
+export function getVidEasyUrl({ type, imdbId, season, episode }) {
+  if (!type) throw new Error("type must be 'movie' or 'tv'");
   if (type === "tv" && season && episode) {
     return `${VIDEASYDOMAIN}/tv/${imdbId}/${season}/${episode}`;
   }
