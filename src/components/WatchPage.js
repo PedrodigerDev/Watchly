@@ -1,9 +1,10 @@
 // src/components/WatchPage.jsx
-import React, { useEffect, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import { fetchMediaDetails, getWatchUrl } from '../api';
-import Player from './Player';
-import './WatchPage.css';
+import React, { useEffect, useState } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import { fetchMediaDetails } from "../api";
+import { getVidSrcUrl, getVidEasyUrl } from "../utils/providers"; // new
+import Player from "./Player";
+import "./WatchPage.css";
 
 const WatchPage = () => {
   const { type, id, season, episode } = useParams();
@@ -14,19 +15,27 @@ const WatchPage = () => {
   const [selectedEpisode, setSelectedEpisode] = useState(Number(episode) || 1);
   const [episodeList, setEpisodeList] = useState([]);
 
+  // NEW: track provider (default to vidsrc)
+  const [provider, setProvider] = useState("vidsrc");
+
   useEffect(() => {
     fetchMediaDetails(type, id).then((data) => {
       setMedia(data);
 
-      if (type === 'tv' && data?.seasons?.length > 0) {
-        const currentSeason = data.seasons.find(s => s.season_number === selectedSeason);
+      if (type === "tv" && data?.seasons?.length > 0) {
+        const currentSeason = data.seasons.find(
+          (s) => s.season_number === selectedSeason
+        );
         if (currentSeason && currentSeason.episodes) {
           setEpisodeList(currentSeason.episodes);
         } else {
-          const fallbackEpisodes = Array.from({ length: currentSeason?.episode_count || 1 }, (_, i) => ({
-            episode_number: i + 1,
-            name: ''
-          }));
+          const fallbackEpisodes = Array.from(
+            { length: currentSeason?.episode_count || 1 },
+            (_, i) => ({
+              episode_number: i + 1,
+              name: "",
+            })
+          );
           setEpisodeList(fallbackEpisodes);
         }
       }
@@ -44,16 +53,47 @@ const WatchPage = () => {
     navigate(`/watch/${type}/${id}/${selectedSeason}/${epNum}`);
   };
 
-  const title = media?.title?.romaji || media?.title || media?.name || 'Loading...';
-  const videoSrc = getWatchUrl(type, id, selectedSeason, selectedEpisode);
+  const title =
+    media?.title?.romaji || media?.title || media?.name || "Loading...";
+
+  // Build video src depending on provider
+  let videoSrc = "";
+  if (provider === "vidsrc") {
+    videoSrc = getVidSrcUrl({
+      type,
+      imdb: id.startsWith("tt") ? id : undefined,
+      tmdb: !id.startsWith("tt") ? id : undefined,
+      season: type === "tv" ? selectedSeason : undefined,
+      episode: type === "tv" ? selectedEpisode : undefined,
+      autoplay: true,
+    });
+  } else if (provider === "videasy") {
+    videoSrc = getVidEasyUrl({ imdbId: id });
+  }
 
   return (
     <div className="watch-page">
       <h2 className="watch-title">{title}</h2>
 
+      {/* Provider Switcher */}
+      <div className="provider-switcher">
+        <button
+          className={provider === "vidsrc" ? "active" : ""}
+          onClick={() => setProvider("vidsrc")}
+        >
+          VidSrc
+        </button>
+        <button
+          className={provider === "videasy" ? "active" : ""}
+          onClick={() => setProvider("videasy")}
+        >
+          VidEasy
+        </button>
+      </div>
+
       <Player src={videoSrc} />
 
-      {(type === 'tv' || type === 'anime') && (
+      {(type === "tv" || type === "anime") && (
         <div className="selectors-wrapper">
           {media?.seasons?.length > 0 && (
             <div className="selector-group horizontal">
@@ -62,7 +102,9 @@ const WatchPage = () => {
                 {media.seasons.map((s) => (
                   <button
                     key={s.season_number}
-                    className={`selector-btn ${selectedSeason === s.season_number ? 'active' : ''}`}
+                    className={`selector-btn ${
+                      selectedSeason === s.season_number ? "active" : ""
+                    }`}
                     onClick={() => handleSeasonClick(s.season_number)}
                   >
                     {s.name || `Season ${s.season_number}`}
@@ -79,12 +121,16 @@ const WatchPage = () => {
                 {episodeList.map((ep) => (
                   <button
                     key={ep.episode_number}
-                    className={`selector-btn ${selectedEpisode === ep.episode_number ? 'active' : ''}`}
+                    className={`selector-btn ${
+                      selectedEpisode === ep.episode_number ? "active" : ""
+                    }`}
                     onClick={() => handleEpisodeClick(ep.episode_number)}
                     title={ep.name || `Episode ${ep.episode_number}`}
                   >
                     Ep {ep.episode_number}
-                    {ep.name && <span className="ep-name"> — {ep.name}</span>}
+                    {ep.name && (
+                      <span className="ep-name"> — {ep.name}</span>
+                    )}
                   </button>
                 ))}
               </div>
