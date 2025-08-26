@@ -50,15 +50,18 @@ const Player = ({ src }) => {
           if (e.button === 1 || e.button === 2) e.preventDefault();
         }}
       >
-        <iframe
-          src={src}
-          className="player-iframe"
-          frameBorder="0"
-          allowFullScreen
-          allow="autoplay; encrypted-media"
-          sandbox={sandboxProps}
-          title="Video Player"
-        ></iframe>
+<iframe
+  src={src}
+  className="player-iframe"
+  frameBorder="0"
+  allowFullScreen
+  allow="autoplay; encrypted-media"
+  // Only add sandbox if not Videasy
+  {...(!src.includes("videasy.net")
+    ? { sandbox: "allow-scripts allow-same-origin allow-forms allow-presentation" }
+    : {})}
+  title="Video Player"
+/>
       </div>
 
       <button
