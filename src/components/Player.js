@@ -57,9 +57,9 @@ const Player = ({ src }) => {
   allowFullScreen
   allow="autoplay; encrypted-media"
   // Only add sandbox if not Videasy
-  {...(!src.includes("videasy.net")
-    ? { sandbox: "allow-scripts allow-same-origin allow-forms allow-presentation" }
-    : {})}
+ // {...(!src.includes("videasy.net")
+//    ? { sandbox: "allow-scripts allow-same-origin allow-forms allow-presentation" }
+//    : {})}
   title="Video Player"
 />
       </div>
