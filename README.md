@@ -40,8 +40,4 @@ Inspired by Netflix, it offers smart search, progress tracking, genre exploratio
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
 ### 1. Clone & install dependencies
-
-```bash
-git clone https://github.com/yourusername/watchly.git
-cd watchly
-npm install
+and uhh I forgor.
